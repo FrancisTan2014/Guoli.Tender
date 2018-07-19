@@ -1,9 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guoli.Tender.Model", "Guoli.Tender.Model\Guoli.Tender.Model.csproj", "{FB400C75-EC35-4E73-9F71-F0B0035A377A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guoli.Tender.Web", "Guoli.Tender.Web\Guoli.Tender.Web.csproj", "{1C70AE7F-FB9E-4F65-B6C0-B88E5645D1DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guoli.Tender.Repos", "Guoli.Tender.Repos\Guoli.Tender.Repos.csproj", "{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB400C75-EC35-4E73-9F71-F0B0035A377A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB400C75-EC35-4E73-9F71-F0B0035A377A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB400C75-EC35-4E73-9F71-F0B0035A377A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB400C75-EC35-4E73-9F71-F0B0035A377A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C70AE7F-FB9E-4F65-B6C0-B88E5645D1DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C70AE7F-FB9E-4F65-B6C0-B88E5645D1DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C70AE7F-FB9E-4F65-B6C0-B88E5645D1DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C70AE7F-FB9E-4F65-B6C0-B88E5645D1DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
