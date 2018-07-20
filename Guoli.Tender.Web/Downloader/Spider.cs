@@ -7,18 +7,46 @@ using System.Web;
 using Guoli.Tender.Model;
 using HtmlAgilityPack;
 
-namespace Guoli.Tender.Web.Downloader
+namespace Guoli.Tender.Web
 {
-    public class Spider
+    public sealed class Spider
     {
-        public static IList<Article> GetArticleList(string url)
+        private static WebClient _client;
+        private static object _lockObj = new object();
+
+        private static WebClient GetClient(Encoding encoding = null)
         {
-            var list = new List<Article>();
-            var client = new WebClient {Encoding = Encoding.UTF8};
+            if (_client == null)
+            {
+                lock (_lockObj)
+                {
+                    if (_client == null)
+                    {
+                        _client = new WebClient();
+                    }
+                }
+            }
+
+            _client.Encoding = encoding ?? Encoding.UTF8;
+
+            return _client;
+        }
+
+        public static HtmlDocument DownloadHtml(string url, Encoding encoding = null)
+        {
+            var client = GetClient();
             var html = client.DownloadString(url);
 
             var document = new HtmlDocument();
             document.LoadHtml(html);
+
+            return document;
+        }
+
+        public static IList<Article> GetArticleList(string url)
+        {
+            var list = new List<Article>();
+            var document = DownloadHtml(url);
 
             var listTableClassName = "listInfoTable";
             var table = document.DocumentNode
@@ -48,6 +76,30 @@ namespace Guoli.Tender.Web.Downloader
             }
 
             return list;
+        }
+
+        public static Article GetArticleContent(Article article)
+        {
+            var document = DownloadHtml(article.SourceUrl);
+
+            var contentDiv = document.DocumentNode.Descendants("div")
+                .SingleOrDefault(e => e.Attributes["class"].Value.Contains("noticeBox"));
+            //if (contentDiv == null)
+            //{
+            //    return article;
+            //}
+
+            var time = contentDiv.SelectNodes("div[1]/p[2]/span[2]")[0].InnerText.Trim();
+            var content = contentDiv.SelectNodes("div[2]")[0].InnerHtml;
+            var txt = HtmlHelper.WithoutHtmlTags(content);
+            var summary = txt.Substring(0, 150);
+
+            article.Content = content;
+            article.ContentWithoutHtml = txt;
+            article.PubTime = DateTime.Parse(time);
+            article.Summary = summary;
+
+            return article;
         }
     }
 }

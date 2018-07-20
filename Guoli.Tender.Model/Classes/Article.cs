@@ -24,6 +24,9 @@ namespace Guoli.Tender.Model
         }
 
         [Required]
+        public string Summary { get; set; }
+
+        [Required]
         public string Content { get; set; }
 
         [Required]
