@@ -21,6 +21,7 @@ namespace Guoli.Tender.Repos
         ICollection<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
         TEntity Get(TKey id);
         TEntity Insert(TEntity model);
+        void BulkInsert(IEnumerable<TEntity> models);
         bool Update(TEntity model);
         bool Remove(TKey id);
     }

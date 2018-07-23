@@ -57,6 +57,12 @@ namespace Guoli.Tender.Repos
             return model;
         }
 
+        public void BulkInsert(IEnumerable<TEntity> models)
+        {
+            GetSet().AddRange(models);
+            _dbContext.SaveChanges();
+        }
+
         public bool Update(TEntity model)
         {
             GetSet().Attach(model);
