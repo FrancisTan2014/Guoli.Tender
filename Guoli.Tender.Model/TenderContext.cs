@@ -1,4 +1,5 @@
-﻿namespace Guoli.Tender.Model
+﻿
+namespace Guoli.Tender.Model
 {
     using System;
     using System.Data.Entity;
@@ -26,5 +27,6 @@
         public virtual DbSet<Article> Articles { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; }
     }
 }

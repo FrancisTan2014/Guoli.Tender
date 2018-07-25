@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guoli.Tender.Web", "Guoli.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guoli.Tender.Repos", "Guoli.Tender.Repos\Guoli.Tender.Repos.csproj", "{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guoli.Tender.Web.Test", "Guoli.Tender.Web.Test\Guoli.Tender.Web.Test.csproj", "{FEDD0389-0F41-4CEA-A208-A6E3C21F7ACF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CF3439B-A62B-4EC5-B638-68B65D9AFF11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEDD0389-0F41-4CEA-A208-A6E3C21F7ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEDD0389-0F41-4CEA-A208-A6E3C21F7ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEDD0389-0F41-4CEA-A208-A6E3C21F7ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEDD0389-0F41-4CEA-A208-A6E3C21F7ACF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

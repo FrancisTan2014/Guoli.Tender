@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Guoli.Tender.Web.Downloader;
+using Guoli.Tender.Web;
 using HtmlAgilityPack;
 
 namespace Guoli.Tender.Web
@@ -18,11 +18,8 @@ namespace Guoli.Tender.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             
-            //var url =
-            //    "http://wz.guangzh.95306.cn:80/mainPageNoticeList.do?method=init&id=7200001&cur=1&keyword=&inforCode=&time0=&time1=";
-
-            //var html = Spider.GetArticleList(url);
-
+            var task = new DownloadTask();
+            task.Start();
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)

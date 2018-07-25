@@ -9,6 +9,7 @@ namespace Guoli.Tender.Web
         {
             filters.Add(new HandleErrorAttribute());
             filters.Add(new ValidateFilter());
+            filters.Add(new ExceptionFilter());
         }
     }
 }
