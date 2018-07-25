@@ -2,7 +2,7 @@
   <section class="content-container">
 
     <div class="mb10">
-      <el-button type="primary" icon="plus" @click="showEdit(null)">添加</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="showEdit(null)">添加</el-button>
     </div>
 
     <el-table :data="list" style="width: 100%" :loading="listLoading" border>
@@ -15,8 +15,8 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="edit" @click="showEdit(scope.row)">修改</el-button>
-          <!-- <el-button type="danger" size="small" icon="delete2">删除</el-button> -->
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="showEdit(scope.row)">修改</el-button>
+          <!-- <el-button type="danger" size="small" icon="el-icon-delete2">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>

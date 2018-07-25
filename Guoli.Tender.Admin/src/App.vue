@@ -13,5 +13,7 @@ export default {
 <style>
   .content-container { padding: 20px; }
   .mb10 { margin-bottom: 10px; }
+  .fr { float: right; }
+  .fl { float: left; }
 </style>
 

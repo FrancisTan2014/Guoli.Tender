@@ -48,6 +48,11 @@ export const constantRouterMap = [
       name: 'depart',
       meta: { title: '单位管理', icon: 'department' },
       component: () => import('@/views/system/depart')
+    }, {
+      path: 'dict',
+      name: 'dict',
+      meta: { title: '字典管理', icon: 'dict' },
+      component: () => import('@/views/system/dict')
     }]
   },
 
