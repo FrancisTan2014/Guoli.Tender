@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="ArticleRepository.cs" />
     <Compile Include="DepartmentRepository.cs" />
+    <Compile Include="DictionariesRepository.cs" />
     <Compile Include="ExceptionLogRepository.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

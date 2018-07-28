@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -17,8 +18,13 @@ namespace Guoli.Tender.Web
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            
-            var task = new DownloadTask();
+
+            var task = DownloadTask.GetInstance();
+            task.AfterTaskFinished += (o, args) =>
+            {
+                Thread.Sleep(60 * 1000);
+                task.Start();
+            };
             task.Start();
         }
 

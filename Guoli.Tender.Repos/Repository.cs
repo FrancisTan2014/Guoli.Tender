@@ -35,9 +35,9 @@ namespace Guoli.Tender.Repos
             return _dbContext.SaveChanges() > 0;
         }
 
-        public ICollection<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+        public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return GetSet().Where(predicate).ToList();
+            return GetSet().Where(predicate);
         }
 
         public TEntity Get(TKey id)
@@ -45,9 +45,9 @@ namespace Guoli.Tender.Repos
             return GetSet().Find(id);
         }
 
-        public ICollection<TEntity> GetAll()
+        public IQueryable<TEntity> GetAll()
         {
-            return GetSet().ToList();
+            return GetSet().AsQueryable<TEntity>();
         }
 
         public TEntity Insert(TEntity model)

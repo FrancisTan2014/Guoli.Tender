@@ -20,4 +20,12 @@ api.fetchTypes = function () {
     })
 }
 
+api.addType = function (name) {
+    return request({
+        url: `/${controller}/addType`,
+        method: 'post',
+        data: { name: name }
+    })
+}
+
 export default api

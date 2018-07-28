@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Guoli.Tender.Model;
@@ -13,60 +17,115 @@ namespace Guoli.Tender.Web
 {
     public sealed class Spider
     {
-        private static IRepository<ExceptionLog, int> _logRepos = new ExceptionLogRepository();
+        private ConcurrentQueue<Host> _proxyHost = new ConcurrentQueue<Host>();
 
-        private static WebClient GetClient(Encoding encoding = null)
+        private void LoadProxy()
         {
-            var client = new WebClient { Encoding = encoding ?? Encoding.UTF8 };
-            return client;
+            var api = "http://api3.xiguadaili.com/ip/?tid=557359382051037&num=5000";
+            var request = (HttpWebRequest)WebRequest.Create(api);
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (var sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                {
+                    var hosts = sr.ReadToEnd();
+                    if (string.IsNullOrEmpty(hosts))
+                    {
+                        throw new Exception("未能获取到代理 IP");
+                    }
+
+                    hosts = Regex.Replace(hosts, "\\s+", ",");
+
+                    var arr = hosts.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var h in arr)
+                    {
+                        var host = new Host(h);
+                        _proxyHost.Enqueue(host);
+                    }
+                }
+            }
         }
 
-        public static async Task<HtmlDocument> DownloadHtmlAsync(string url, Encoding encoding = null)
+        private Host GetProxy()
         {
-            var client = GetClient();
+            if (_proxyHost.Count == 0)
+            {
+                LoadProxy();
+            }
 
-            string html;
+            Host host = null;
+            while (host == null)
+            {
+                if (_proxyHost.TryDequeue(out host))
+                {
+                    break;
+                }
+
+                Thread.Sleep(50);
+            }
+
+            return host;
+        }
+
+        public string DownloadHtml(string url, Encoding encoding = null)
+        {
             try
             {
-                html = await client.DownloadStringTaskAsync(url);
+                var proxyHost = GetProxy();
+
+                var request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "GET";
+                request.Timeout = 2 * 60 * 1000;
+                request.AllowAutoRedirect = true;
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36";
+                request.Proxy = new WebProxy(proxyHost.Ip, proxyHost.Port);
+
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    using (var sr = new StreamReader(response.GetResponseStream(), encoding ?? Encoding.UTF8))
+                    {
+                        var html = sr.ReadToEnd();
+                        _proxyHost.Enqueue(proxyHost);
+                        return html;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                _logRepos.Insert(new ExceptionLog
+                var _logRepos = new ExceptionLogRepository();
+                var log = new ExceptionLog
                 {
                     ClassName = nameof(Spider),
-                    Method = nameof(DownloadHtmlAsync),
-                    Remark = ex.Message,
+                    Method = nameof(GetArticleList),
                     StackTrace = ex.StackTrace,
+                    Remark = $"msg={ex.Message}; url={url}",
                     AddTime = DateTime.Now
-                });
-                throw ex;
+                };
+                _logRepos.Insert(log);
+                return string.Empty;
             }
-
-            var document = new HtmlDocument();
-            document.LoadHtml(html);
-
-            return document;
         }
 
-        public static async Task<List<Article>> GetArticleList(string url)
+        public List<Article> GetArticleList(string url)
         {
             var list = new List<Article>();
 
-            var document = await DownloadHtmlAsync(url);
-
-            var listTableClassName = "listInfoTable";
-            var table = document.DocumentNode
-                .Descendants("table")
-                .SingleOrDefault(e => e.Attributes["class"].Value == listTableClassName);
-            if (table == null)
-            {
-                return list;
-            }
-
-            var trs = table.Descendants("tr").ToList();
             try
             {
+                var html = DownloadHtml(url);
+                var document = new HtmlDocument();
+                document.LoadHtml(html);
+
+                var listTableClassName = "listInfoTable";
+                var table = document.DocumentNode
+                    .Descendants("table")
+                    .SingleOrDefault(e => e.Attributes["class"].Value == listTableClassName);
+                if (table == null)
+                {
+                    return list;
+                }
+
+                var trs = table.Descendants("tr").ToList();
                 for (var i = 1; i < trs.Count; i++)
                 {
                     var row = trs[i];
@@ -88,12 +147,13 @@ namespace Guoli.Tender.Web
             }
             catch (Exception ex)
             {
+                var _logRepos = new ExceptionLogRepository();
                 var log = new ExceptionLog
                 {
                     ClassName = nameof(Spider),
                     Method = nameof(GetArticleList),
                     StackTrace = ex.StackTrace,
-                    Remark = $"url={url}\r\nhtml={document}",
+                    Remark = $"msg={ex.Message}; url={url}",
                     AddTime = DateTime.Now
                 };
                 _logRepos.Insert(log);
@@ -102,29 +162,64 @@ namespace Guoli.Tender.Web
             return list;
         }
 
-        public static async Task<bool> GetArticleContent(Article article)
+        public bool GetArticleContent(Article article)
         {
-            var document = await DownloadHtmlAsync(article.SourceUrl);
-
-            var contentDiv = document.DocumentNode
-                .Descendants("div")
-                .SingleOrDefault(e => e.Attributes["class"]?.Value?.Contains("noticeBox") ?? false);
-            if (contentDiv == null)
+            try
             {
+                var html = DownloadHtml(article.SourceUrl);
+                var document = new HtmlDocument();
+                document.LoadHtml(html);
+
+                var contentDiv = document.DocumentNode
+                    .Descendants("div")
+                    .SingleOrDefault(e => e.Attributes["class"]?.Value?.Contains("noticeBox") ?? false);
+                if (contentDiv == null)
+                {
+                    return false;
+                }
+
+                var time = contentDiv.SelectNodes("div[1]/p[2]/span[2]")[0].InnerText.Trim();
+                var content = contentDiv.SelectNodes("div[2]")[0].InnerHtml;
+                var txt = HtmlHelper.WithoutHtmlTags(content);
+
+                var str = HtmlHelper.WithoutWhiteSpaces(txt);
+                var len = str.Length >= 150 ? 150 : str.Length;
+                var summary = str.Substring(0, len);
+
+                article.Content = content;
+                article.ContentWithoutHtml = txt;
+                article.PubTime = DateTime.Parse(time);
+                article.Summary = summary;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var _logRepos = new ExceptionLogRepository();
+                var log = new ExceptionLog
+                {
+                    ClassName = nameof(Spider),
+                    Method = nameof(GetArticleContent),
+                    StackTrace = ex.StackTrace,
+                    Remark = $"msg={ex.Message};   url={article.SourceUrl}",
+                    AddTime = DateTime.Now
+                };
+                _logRepos.Insert(log);
                 return false;
             }
+        }
+    }
 
-            var time = contentDiv.SelectNodes("div[1]/p[2]/span[2]")[0].InnerText.Trim();
-            var content = contentDiv.SelectNodes("div[2]")[0].InnerHtml;
-            var txt = HtmlHelper.WithoutHtmlTags(content);
-            var summary = HtmlHelper.WithoutWhiteSpaces(txt).Substring(0, 150);
+    sealed class Host
+    {
+        public string Ip { get; set; }
+        public int Port { get; set; }
 
-            article.Content = content;
-            article.ContentWithoutHtml = txt;
-            article.PubTime = DateTime.Parse(time);
-            article.Summary = summary;
-
-            return true;
+        public Host(string host)
+        {
+            var arr = host.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            Ip = arr[0];
+            Port = Convert.ToInt32(arr[1]);
         }
     }
 }

@@ -55,29 +55,13 @@
     <Compile Include="Classes\ExceptionLog.cs" />
     <Compile Include="Classes\User.cs" />
     <Compile Include="IEntity.cs" />
-    <Compile Include="Migrations\201807130359333_InitialCreate.cs" />
-    <Compile Include="Migrations\201807130359333_InitialCreate.Designer.cs">
-      <DependentUpon>201807130359333_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201807250659423_SyncTable.cs" />
+    <Compile Include="Migrations\201807250659423_SyncTable.Designer.cs">
+      <DependentUpon>201807250659423_SyncTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201807130404382_AddTable.cs" />
-    <Compile Include="Migrations\201807130404382_AddTable.Designer.cs">
-      <DependentUpon>201807130404382_AddTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807190804402_AddTableUser.cs" />
-    <Compile Include="Migrations\201807190804402_AddTableUser.Designer.cs">
-      <DependentUpon>201807190804402_AddTableUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807230630520_AddExceptionLog.cs" />
-    <Compile Include="Migrations\201807230630520_AddExceptionLog.Designer.cs">
-      <DependentUpon>201807230630520_AddExceptionLog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807230709131_AddTableExceptionLog.cs" />
-    <Compile Include="Migrations\201807230709131_AddTableExceptionLog.Designer.cs">
-      <DependentUpon>201807230709131_AddTableExceptionLog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807230721027_AddColumn.cs" />
-    <Compile Include="Migrations\201807230721027_AddColumn.Designer.cs">
-      <DependentUpon>201807230721027_AddColumn.cs</DependentUpon>
+    <Compile Include="Migrations\201807250925003_UpdateDict.cs" />
+    <Compile Include="Migrations\201807250925003_UpdateDict.Designer.cs">
+      <DependentUpon>201807250925003_UpdateDict.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,23 +74,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201807130359333_InitialCreate.resx">
-      <DependentUpon>201807130359333_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201807250659423_SyncTable.resx">
+      <DependentUpon>201807250659423_SyncTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807130404382_AddTable.resx">
-      <DependentUpon>201807130404382_AddTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807190804402_AddTableUser.resx">
-      <DependentUpon>201807190804402_AddTableUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807230630520_AddExceptionLog.resx">
-      <DependentUpon>201807230630520_AddExceptionLog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807230709131_AddTableExceptionLog.resx">
-      <DependentUpon>201807230709131_AddTableExceptionLog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807230721027_AddColumn.resx">
-      <DependentUpon>201807230721027_AddColumn.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201807250925003_UpdateDict.resx">
+      <DependentUpon>201807250925003_UpdateDict.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

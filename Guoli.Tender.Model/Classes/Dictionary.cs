@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Guoli.Tender.Model
 {
@@ -13,10 +14,17 @@ namespace Guoli.Tender.Model
         [MaxLength(20)]
         public string Name { get; set; }
 
+        /// <summary>
+        /// 字典类型，当它为 0 时表示元类型（类型的类型）
+        /// </summary>
         [Required]
         [Range(1, int.MaxValue)]
         public int Type { get; set; }
 
         public int ParentId { get; set; }
+
+        public string Remark { get; set; }
+
+        public DateTime AddTime { get; set; }
     }
 }
