@@ -17,6 +17,7 @@ namespace Guoli.Tender.Web
 {
     public sealed class Spider
     {
+        private bool _enableProxy = false;
         private ConcurrentQueue<Host> _proxyHost = new ConcurrentQueue<Host>();
 
         private void LoadProxy()
@@ -70,22 +71,31 @@ namespace Guoli.Tender.Web
         {
             try
             {
-                var proxyHost = GetProxy();
-
                 var request = (HttpWebRequest)WebRequest.Create(url);
+
+                Host proxyHost = null;
+                if (_enableProxy)
+                {
+                    proxyHost = GetProxy();
+                    request.Proxy = new WebProxy(proxyHost.Ip, proxyHost.Port);
+                }
+
                 request.Method = "GET";
                 request.Timeout = 2 * 60 * 1000;
                 request.AllowAutoRedirect = true;
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36";
-                request.Proxy = new WebProxy(proxyHost.Ip, proxyHost.Port);
 
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
-                    using (var sr = new StreamReader(response.GetResponseStream(), encoding ?? Encoding.UTF8))
+                    var stream = response.GetResponseStream();
+                    using (var sr = new StreamReader(stream, encoding ?? Encoding.UTF8))
                     {
                         var html = sr.ReadToEnd();
-                        _proxyHost.Enqueue(proxyHost);
+                        if (proxyHost != null)
+                        {
+                            _proxyHost.Enqueue(proxyHost);
+                        }
                         return html;
                     }
                 }

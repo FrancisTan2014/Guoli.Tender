@@ -15,5 +15,6 @@ namespace Guoli.Tender.Repos
         void BulkInsert(IEnumerable<TEntity> models);
         bool Update(TEntity model);
         bool Remove(TKey id);
+        int Count();
     }
 }

@@ -38,6 +38,20 @@ export const constantRouterMap = [
   },
 
   {
+    path: '/article',
+    component: Layout,
+    redirct: '/article/index',
+    name: 'Article',
+    meta: { title: '招标信息', icon: 'article' },
+    children: [{
+      path: 'index',
+      name: 'index',
+      meta: { title: '列表', icon: 'list' },
+      component: () => import('@/views/article/index')
+    }]
+  },
+
+  {
     path: '/system',
     component: Layout,
     redirect: '/system/depart',

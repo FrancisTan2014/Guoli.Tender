@@ -70,6 +70,11 @@ namespace Guoli.Tender.Repos
             return _dbContext.SaveChanges() > 0;
         }
 
+        public int Count()
+        {
+            return GetSet().Count();
+        }
+
         protected DbSet<TEntity> GetSet()
         {
             return _dbContext.Set<TEntity>();

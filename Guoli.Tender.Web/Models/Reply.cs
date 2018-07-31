@@ -13,6 +13,11 @@ namespace Guoli.Tender.Web.Models
 
         private Reply() { }
 
+        public static Reply Get(bool success)
+        {
+            return success ? OfSuccess() : OfFailed();
+        }
+
         public static Reply OfParamsError()
         {
             return new Reply

@@ -55,13 +55,21 @@
     <Compile Include="Classes\ExceptionLog.cs" />
     <Compile Include="Classes\User.cs" />
     <Compile Include="IEntity.cs" />
-    <Compile Include="Migrations\201807250659423_SyncTable.cs" />
-    <Compile Include="Migrations\201807250659423_SyncTable.Designer.cs">
-      <DependentUpon>201807250659423_SyncTable.cs</DependentUpon>
+    <Compile Include="Migrations\201807310109093_SyncTable.cs" />
+    <Compile Include="Migrations\201807310109093_SyncTable.Designer.cs">
+      <DependentUpon>201807310109093_SyncTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201807250925003_UpdateDict.cs" />
-    <Compile Include="Migrations\201807250925003_UpdateDict.Designer.cs">
-      <DependentUpon>201807250925003_UpdateDict.cs</DependentUpon>
+    <Compile Include="Migrations\201807310212404_AddColumnToArticle.cs" />
+    <Compile Include="Migrations\201807310212404_AddColumnToArticle.Designer.cs">
+      <DependentUpon>201807310212404_AddColumnToArticle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807310646229_UpdateColumn.cs" />
+    <Compile Include="Migrations\201807310646229_UpdateColumn.Designer.cs">
+      <DependentUpon>201807310646229_UpdateColumn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807310652596_UpdateColumn1.cs" />
+    <Compile Include="Migrations\201807310652596_UpdateColumn1.Designer.cs">
+      <DependentUpon>201807310652596_UpdateColumn1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -74,11 +82,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201807250659423_SyncTable.resx">
-      <DependentUpon>201807250659423_SyncTable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201807310109093_SyncTable.resx">
+      <DependentUpon>201807310109093_SyncTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807250925003_UpdateDict.resx">
-      <DependentUpon>201807250925003_UpdateDict.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201807310212404_AddColumnToArticle.resx">
+      <DependentUpon>201807310212404_AddColumnToArticle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807310646229_UpdateColumn.resx">
+      <DependentUpon>201807310646229_UpdateColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807310652596_UpdateColumn1.resx">
+      <DependentUpon>201807310652596_UpdateColumn1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -19,9 +19,9 @@ namespace Guoli.Tender.Web.Controllers
     {
         protected abstract IRepository<TEntity, TKey> Repos { get; set; }
 
-        private Reply GetReply(bool success)
+        protected CustomJsonResult CustomJson(object data, JsonRequestBehavior behavior = JsonRequestBehavior.AllowGet)
         {
-            return success ? Reply.OfSuccess() : Reply.OfFailed();
+            return new CustomJsonResult(data, behavior);
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace Guoli.Tender.Web.Controllers
             var m = (IEntity<int>)Repos.Insert(model);
 
             var success = m.Id > 0;
-            var res = GetReply(success);
+            var res = Reply.Get(success);
             return Json(res);
         }
 
@@ -38,7 +38,7 @@ namespace Guoli.Tender.Web.Controllers
         public virtual JsonResult Update(TEntity model)
         {
             var success = Repos.Update(model);
-            var res = GetReply(success);
+            var res = Reply.Get(success);
             return Json(res);
         }
 
@@ -46,7 +46,7 @@ namespace Guoli.Tender.Web.Controllers
         public virtual JsonResult Remove(TKey id)
         {
             var success = Repos.Remove(id);
-            var res = GetReply(success);
+            var res = Reply.Get(success);
             return Json(res);
         }
 

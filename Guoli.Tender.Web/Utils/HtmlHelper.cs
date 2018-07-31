@@ -11,7 +11,7 @@ namespace Guoli.Tender.Web
     {
         public static string WithoutHtmlTags(string html)
         {
-            var pattern = "</*\\s*\\w+>";
+            var pattern = "</*\\s*\\w+[^>]*>";
             return Regex.Replace(html, pattern, "");
         }
 

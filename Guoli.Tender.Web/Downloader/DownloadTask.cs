@@ -22,7 +22,7 @@ namespace Guoli.Tender.Web
 
         // 下载时间间隔值（ms），防止 503 问题
         private const int ARTICLE_DOWNLOAD_TIMESPAN = 1000;
-        private const int LIST_DOWNLOAD_TIMESPAN = 1000 * 20;
+        private const int LIST_DOWNLOAD_TIMESPAN = ARTICLE_DOWNLOAD_TIMESPAN * 20;
         // 指示当队列中的文章数达到此阀值时，进行持久化操作
         // 批量的持久化操作，有利于提高写数据库的效率
         private const int MAX_COUNT_TO_PERSISTENCE = 1000;
@@ -88,7 +88,7 @@ namespace Guoli.Tender.Web
                 }
             }
 
-            _isFirstTime = _articleRepos.GetAll().Count() == 0;
+            _isFirstTime = !_articleRepos.GetAll().Any();
 
             DownloadPages();
             DownloadArticles();
@@ -122,18 +122,14 @@ namespace Guoli.Tender.Web
             var departs = _departRepos.GetAll().ToList();
             _departCount = departs.Count;
 
-            var ids = GetIds();
-            var argList = from id in ids
-                          select new Dictionary<string, string>
-                {
-                    { "method", "list" },
-                    { "cur", "1" },
-                    { "id", id }
-                };
+            //var ids = GetIds();
             foreach (var d in departs)
             {
-                _buckets.Add(d.Id, new Queue<Article>());
-                ThreadPool.QueueUserWorkItem(o => DownloadPages(d, argList));
+                if (!_wasStartedBefore)
+                {
+                    _buckets.Add(d.Id, new Queue<Article>());
+                }
+                ThreadPool.QueueUserWorkItem(o => DownloadPages(d));
             }
         }
 
@@ -143,29 +139,30 @@ namespace Guoli.Tender.Web
         /// 步到 _listDownloadFinished 中
         /// </summary>
         /// <param name="depart"></param>
-        /// <param name="argList"></param>
-        private void DownloadPages(Department depart, IEnumerable<Dictionary<string, string>> argList)
+        private void DownloadPages(Department depart)
         {
             try
             {
-                foreach (var args in argList)
-                {
-                    var page = 1;
-                    var hasNewArticles = true;
-                    while (hasNewArticles)
+                var args = new Dictionary<string, string>
                     {
-                        var articles = DownloadSinglePage(depart, args, page);
+                        { "method", "list" },
+                        { "cur", "1" },
+                    };
+                var page = 1;
+                var hasNewArticles = true;
+                while (hasNewArticles)
+                {
+                    var articles = DownloadSinglePage(depart, args, page);
 
-                        hasNewArticles = HasNewArticles(articles);
-                        if (hasNewArticles)
-                        {
-                            var bucket = _buckets[depart.Id];
-                            PutIntoBucket(articles, bucket);
-                        }
-
-                        page++;
-                        Thread.Sleep(LIST_DOWNLOAD_TIMESPAN);
+                    hasNewArticles = HasNewArticles(articles);
+                    if (hasNewArticles)
+                    {
+                        var bucket = _buckets[depart.Id];
+                        PutIntoBucket(articles, bucket);
                     }
+
+                    page++;
+                    Thread.Sleep(LIST_DOWNLOAD_TIMESPAN);
                 }
             }
             catch (Exception ex)
@@ -206,22 +203,20 @@ namespace Guoli.Tender.Web
                     // 第一次启动任务，所有文章都是最新的
                     return true;
                 }
-                else
+
+                // 如果不是第一次启动任务，判断是否有
+                // 新的文章的依据是时间，这里将逻辑简
+                // 化为与当前日期进行对比，认定今天的
+                // 文章为新文章，否则为旧文章
+                foreach (var a in articles)
                 {
-                    // 如果不是第一次启动任务，判断是否有
-                    // 新的文章的依据是时间，这里将逻辑简
-                    // 化为与当前日期进行对比，认定今天的
-                    // 文章为新文章，否则为旧文章
-                    foreach (var a in articles)
+                    var timeSpan = DateTime.Now - a.PubTime;
+                    if (timeSpan.Days == 0)
                     {
-                        var timeSpan = DateTime.Now - a.PubTime;
-                        if (timeSpan.Days == 0)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    return false;
                 }
+                return false;
             }
 
             return false;
@@ -237,7 +232,7 @@ namespace Guoli.Tender.Web
             articles.ForEach(a =>
             {
                 a.DepartmentId = depart.Id;
-                GetTypesForArticle(a, args["id"]);
+                //GetTypesForArticle(a, args["id"]);
             });
 
             return articles;
@@ -245,9 +240,9 @@ namespace Guoli.Tender.Web
 
         private void GetTypesForArticle(Article article, string id)
         {
-            article.TenderType = id[0];
-            article.NoticeType = id[1];
-            article.PropType = id[2];
+            article.TenderType = Convert.ToInt32(id[0]);
+            article.NoticeType = Convert.ToInt32(id[1]);
+            article.PropType = Convert.ToInt32(id[2]);
         }
 
         private void DownloadArticles()
@@ -358,11 +353,11 @@ namespace Guoli.Tender.Web
         private List<string> GetIds()
         {
             //[{n:'采购',c:'1',w:false},{n:'招标',c:'3',m1:true,w:true},{n:'竞买',c:'4',w:true},{n:'集中竞价',c:'6',m2:true},{n:'销售',c:'2',w:false},{n:'竞卖',c:'5',m1:true,m2:true},{n:'公示',c:'7',w:false},{n:'审前公示',c:'8',m1:true}, { n: '采购公示',c: '9',m2: true}
-            var types = new[] { 3, 4, 5, 6, 8, 9 };
+            var types = new[] { 1, 2, 7 };
             // [{n:'项目公告',c:'0'},{n:'中标公告',c:'2'},{n:'变更公告',c:'3'},{n:'补遗公告',c:'4'},{n:'结果补遗',c:'5'},{n:'流标公告',c:'6'}]
             var flags = new[] { 0, 2, 3, 4, 5, 6 };
             // [{n:'全部',c:'0'},{n:'线上项目',c:'1',w:false},{n:'正式项目',c:'3',m1:true,w:true},{n:'模拟项目',c:'4',m2:true},{n:'线下项目',c:'2'}]
-            var projs = new[] { 2, 3, 4 };
+            var projs = new[] { 0 };
             // [{n:'全部',c:'000'},{n:'中国铁路沈阳局集团有限公司',c:'T00'}]
             var markets = new[] { "000" };
 
