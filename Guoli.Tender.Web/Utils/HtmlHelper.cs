@@ -11,8 +11,13 @@ namespace Guoli.Tender.Web
     {
         public static string WithoutHtmlTags(string html)
         {
-            var pattern = "</*\\s*\\w+[^>]*>";
+            var pattern = "(<(style|script)[^>]*>[\\s\\S]+?</(style|script)>)|(<[^>]+>)|([^\\s]+?{[^}]+})|(&nbsp;)|(<!--.+?-->)";
             return Regex.Replace(html, pattern, "");
+        }
+
+        public static string Decode(string html)
+        {
+            return HttpUtility.HtmlDecode(html);
         }
 
         public static string WithoutWhiteSpaces(string txt)

@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Guoli.Tender.Repos</RootNamespace>
     <AssemblyName>Guoli.Tender.Repos</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,8 +51,10 @@
     <Compile Include="ArticleRepository.cs" />
     <Compile Include="DepartmentRepository.cs" />
     <Compile Include="DictionariesRepository.cs" />
+    <Compile Include="EsConfigRepository.cs" />
     <Compile Include="ExceptionLogRepository.cs" />
     <Compile Include="IRepository.cs" />
+    <Compile Include="KeywordRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="UserRepository.cs" />

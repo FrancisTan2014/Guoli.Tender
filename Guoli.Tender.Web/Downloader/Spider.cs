@@ -191,10 +191,11 @@ namespace Guoli.Tender.Web
                 var time = contentDiv.SelectNodes("div[1]/p[2]/span[2]")[0].InnerText.Trim();
                 var content = contentDiv.SelectNodes("div[2]")[0].InnerHtml;
                 var txt = HtmlHelper.WithoutHtmlTags(content);
-
-                var str = HtmlHelper.WithoutWhiteSpaces(txt);
-                var len = str.Length >= 150 ? 150 : str.Length;
-                var summary = str.Substring(0, len);
+                txt = HtmlHelper.Decode(txt);
+                txt = HtmlHelper.WithoutWhiteSpaces(txt);
+                
+                var len = txt.Length >= 300 ? 300 : txt.Length;
+                var summary = txt.Substring(0, len);
 
                 article.Content = content;
                 article.ContentWithoutHtml = txt;

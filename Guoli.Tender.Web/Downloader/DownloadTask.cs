@@ -25,7 +25,7 @@ namespace Guoli.Tender.Web
         private const int LIST_DOWNLOAD_TIMESPAN = ARTICLE_DOWNLOAD_TIMESPAN * 20;
         // 指示当队列中的文章数达到此阀值时，进行持久化操作
         // 批量的持久化操作，有利于提高写数据库的效率
-        private const int MAX_COUNT_TO_PERSISTENCE = 1000;
+        private const int MAX_COUNT_TO_PERSISTENCE = 100;
         // 持久化操作间隔（ms），假设每偏文章下载需要 300ms，同时有 18（共有18个机务段） 个线程在下载文章
         private const int PERSISTENCE_TIMESPAN = (MAX_COUNT_TO_PERSISTENCE * 300) / 18;
 
@@ -122,14 +122,26 @@ namespace Guoli.Tender.Web
             var departs = _departRepos.GetAll().ToList();
             _departCount = departs.Count;
 
-            //var ids = GetIds();
-            foreach (var d in departs)
+            if (_buckets.Count == 0)
             {
-                if (!_wasStartedBefore)
+                departs.ForEach(d =>
                 {
                     _buckets.Add(d.Id, new Queue<Article>());
-                }
-                ThreadPool.QueueUserWorkItem(o => DownloadPages(d));
+                });
+            }
+
+            var ids = GetIds();
+            var argList = from id in ids
+                          select new Dictionary<string, string>
+                {
+                    {"method", "list"},
+                    {"cur", "1"},
+                    {"id", id}
+                };
+
+            foreach (var d in departs)
+            {
+                ThreadPool.QueueUserWorkItem(o => DownloadPages(d, argList));
             }
         }
 
@@ -139,59 +151,61 @@ namespace Guoli.Tender.Web
         /// 步到 _listDownloadFinished 中
         /// </summary>
         /// <param name="depart"></param>
-        private void DownloadPages(Department depart)
+        /// <param name="argList"></param>
+        private void DownloadPages(Department depart, IEnumerable<Dictionary<string, string>> argList)
         {
-            try
+            ThreadPool.QueueUserWorkItem(o =>
             {
-                var args = new Dictionary<string, string>
+                try
+                {
+                    foreach (var args in argList)
                     {
-                        { "method", "list" },
-                        { "cur", "1" },
+                        var page = 1;
+                        var hasNewArticles = true;
+                        while (hasNewArticles)
+                        {
+                            var articles = DownloadSinglePage(depart, args, page);
+
+                            hasNewArticles = HasNewArticles(articles);
+                            if (hasNewArticles)
+                            {
+                                var bucket = _buckets[depart.Id];
+                                PutIntoBucket(articles, bucket);
+                            }
+
+                            page++;
+                            Thread.Sleep(LIST_DOWNLOAD_TIMESPAN);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                            // 为确保即使下载过程中发生异常
+                            // 任务也能被正常停止，在此处将
+                            // 异常记录之后继续后面的操作
+                            var log = new ExceptionLog
+                    {
+                        ClassName = nameof(DownloadTask),
+                        Method = nameof(DownloadPages),
+                        Remark = ex.Message,
+                        StackTrace = ex.StackTrace,
+                        AddTime = DateTime.Now
                     };
-                var page = 1;
-                var hasNewArticles = true;
-                while (hasNewArticles)
-                {
-                    var articles = DownloadSinglePage(depart, args, page);
-
-                    hasNewArticles = HasNewArticles(articles);
-                    if (hasNewArticles)
-                    {
-                        var bucket = _buckets[depart.Id];
-                        PutIntoBucket(articles, bucket);
-                    }
-
-                    page++;
-                    Thread.Sleep(LIST_DOWNLOAD_TIMESPAN);
+                    _exceptionRepos.Insert(log);
                 }
-            }
-            catch (Exception ex)
-            {
-                // 为确保即使下载过程中发生异常
-                // 任务也能被正常停止，在此处将
-                // 异常记录之后继续后面的操作
-                var log = new ExceptionLog
+                finally
                 {
-                    ClassName = nameof(DownloadTask),
-                    Method = nameof(DownloadPages),
-                    Remark = ex.Message,
-                    StackTrace = ex.StackTrace,
-                    AddTime = DateTime.Now
-                };
-                _exceptionRepos.Insert(log);
-            }
-            finally
-            {
-                // 确保下载任务能被正确停止
-                lock (_lockObj)
-                {
-                    _finishedDepartCount += 1;
-                    if (_finishedDepartCount == _departCount)
+                            // 确保下载任务能被正确停止
+                            lock (_lockObj)
                     {
-                        _listDownloadFinished = true;
+                        _finishedDepartCount += 1;
+                        if (_finishedDepartCount == _departCount)
+                        {
+                            _listDownloadFinished = true;
+                        }
                     }
                 }
-            }
+            });
         }
 
         private bool HasNewArticles(List<Article> articles)
@@ -232,7 +246,7 @@ namespace Guoli.Tender.Web
             articles.ForEach(a =>
             {
                 a.DepartmentId = depart.Id;
-                //GetTypesForArticle(a, args["id"]);
+                GetTypesForArticle(a, args["id"]);
             });
 
             return articles;
@@ -302,6 +316,7 @@ namespace Guoli.Tender.Web
                             _downloadedQueue = new ConcurrentQueue<Article>();
                         }
                         _articleRepos.BulkInsert(list);
+                        EsHelper.Index(list);
                     }
 
                     if (IsDownloadFinished() && _downloadedQueue.Count == 0)
@@ -335,14 +350,15 @@ namespace Guoli.Tender.Web
             {
                 foreach (var a in articles)
                 {
+                    var key = a.Title + a.PubTime.ToString("YYYY-MM-DD") + a.QueryId;
                     // 将文章的 QueryId 作为其唯一标识
                     // 来进行排除重复项
-                    if (!_queryIds.ContainsKey(a.QueryId))
+                    if (!_queryIds.ContainsKey(key))
                     {
                         // 利用 hashtable 查询速度快的特点
                         // 进行快速比对，这里 0 这个值没有
                         // 意义，仅作为一个占位符
-                        _queryIds.Add(a.QueryId, 0);
+                        _queryIds.Add(key, 0);
                         //_waitedForDownloadingQueue.Enqueue(a);
                         bucket.Enqueue(a);
                     }

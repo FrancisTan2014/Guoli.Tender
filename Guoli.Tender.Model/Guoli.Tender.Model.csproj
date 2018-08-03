@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Guoli.Tender.Model</RootNamespace>
     <AssemblyName>Guoli.Tender.Model</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,7 +53,9 @@
     <Compile Include="Classes\Article.cs" />
     <Compile Include="Classes\Department.cs" />
     <Compile Include="Classes\Dictionary.cs" />
+    <Compile Include="Classes\EsConfig.cs" />
     <Compile Include="Classes\ExceptionLog.cs" />
+    <Compile Include="Classes\Keyword.cs" />
     <Compile Include="Classes\User.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="Migrations\201807310109093_SyncTable.cs" />
@@ -70,6 +73,26 @@
     <Compile Include="Migrations\201807310652596_UpdateColumn1.cs" />
     <Compile Include="Migrations\201807310652596_UpdateColumn1.Designer.cs">
       <DependentUpon>201807310652596_UpdateColumn1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808010722070_AddTable.cs" />
+    <Compile Include="Migrations\201808010722070_AddTable.Designer.cs">
+      <DependentUpon>201808010722070_AddTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808010740045_AddTable1.cs" />
+    <Compile Include="Migrations\201808010740045_AddTable1.Designer.cs">
+      <DependentUpon>201808010740045_AddTable1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808010827081_UpdateColumn2.cs" />
+    <Compile Include="Migrations\201808010827081_UpdateColumn2.Designer.cs">
+      <DependentUpon>201808010827081_UpdateColumn2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808030039403_AddTable2.cs" />
+    <Compile Include="Migrations\201808030039403_AddTable2.Designer.cs">
+      <DependentUpon>201808030039403_AddTable2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808030220336_UpdateColumn3.cs" />
+    <Compile Include="Migrations\201808030220336_UpdateColumn3.Designer.cs">
+      <DependentUpon>201808030220336_UpdateColumn3.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +116,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807310652596_UpdateColumn1.resx">
       <DependentUpon>201807310652596_UpdateColumn1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808010722070_AddTable.resx">
+      <DependentUpon>201808010722070_AddTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808010740045_AddTable1.resx">
+      <DependentUpon>201808010740045_AddTable1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808010827081_UpdateColumn2.resx">
+      <DependentUpon>201808010827081_UpdateColumn2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808030039403_AddTable2.resx">
+      <DependentUpon>201808030039403_AddTable2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808030220336_UpdateColumn3.resx">
+      <DependentUpon>201808030220336_UpdateColumn3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

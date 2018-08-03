@@ -28,5 +28,7 @@ namespace Guoli.Tender.Model
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; }
+        public virtual DbSet<EsConfig> EsConfig { get; set; }
+        public virtual DbSet<Keyword> Keywords { get; set; }
     }
 }

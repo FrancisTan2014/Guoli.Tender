@@ -37,29 +37,10 @@ namespace Guoli.Tender.Web.Controllers
 
         public JsonResult FetchList(ArticleQueryModel query)
         {
-            var list = Repos.GetAll();
-            if (query.start != null)
-            {
-                list = list.Where(a => a.PubTime > query.start.Value);
-            }
-            if (query.end != null)
-            {
-                list = list.Where(a => a.PubTime < query.end.Value);
-            }
-            if (query.departId > 0)
-            {
-                list = list.Where(a => a.DepartmentId == query.departId);
-            }
-            if (query.readStatus >= 0)
-            {
-                var hasRead = query.readStatus == 1;
-                list = list.Where(a => a.HasRead == hasRead);
-            }
-
-            var total = list.Count();
-            list = list.OrderByDescending(a => a.PubTime)
-                .Skip((query.page - 1) * query.size)
-                .Take(query.size);
+	        long total;
+	        var list = string.IsNullOrEmpty(query.keyword) 
+					? GetFromSqlDb(query, out total) 
+					: EsHelper.Search(query, out total);
 
             var res = Reply.OfSuccess(new
             {
@@ -68,5 +49,43 @@ namespace Guoli.Tender.Web.Controllers
             });
             return CustomJson(res);
         }
+
+	    private IEnumerable<Article> GetFromSqlDb(ArticleQueryModel query, out long total)
+	    {
+			var list = Repos.GetAll();
+		    if (query.start != null)
+		    {
+			    list = list.Where(a => a.PubTime > query.start.Value);
+		    }
+		    if (query.end != null)
+		    {
+			    list = list.Where(a => a.PubTime < query.end.Value);
+		    }
+		    if (query.departId > 0)
+		    {
+			    list = list.Where(a => a.DepartmentId == query.departId);
+		    }
+		    if (query.readStatus >= 0)
+		    {
+			    var hasRead = query.readStatus == 1;
+			    list = list.Where(a => a.HasRead == hasRead);
+		    }
+		    if (!string.IsNullOrEmpty(query.title))
+		    {
+			    list = list.Where(a => a.Title.Contains(query.title));
+		    }
+		    if (query.day != null)
+		    {
+			    var d = query.day.Value;
+			    list = list.Where(a => a.PubTime.Year == d.Year && a.PubTime.Month == d.Month && a.PubTime.Day == d.Day);
+		    }
+
+		    total = list.Count();
+		    list = list.OrderByDescending(a => a.PubTime)
+			    .Skip((query.page - 1) * query.size)
+			    .Take(query.size);
+
+		    return list;
+	    }
     }
 }

@@ -45,9 +45,14 @@ export const constantRouterMap = [
     meta: { title: '招标信息', icon: 'article' },
     children: [{
       path: 'index',
-      name: 'index',
-      meta: { title: '列表', icon: 'list' },
+      name: 'Index',
+      meta: { title: '列表', icon: 'tender' },
       component: () => import('@/views/article/index')
+    },{
+      path: 'keyword',
+      name: 'Keyword',
+      meta: { title: '关键字管理', icon: 'keyword' },
+      component: () => import('@/views/article/keyword')
     }]
   },
 

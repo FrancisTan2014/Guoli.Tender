@@ -14,5 +14,11 @@ namespace Guoli.Tender.Web.Models
         public DateTime? end { get; set; }
 
         public int readStatus { get; set; }
+
+        public string title { get; set; }
+
+        public DateTime? day { get; set; }
+
+        public string keyword { get; set; }
     }
 }

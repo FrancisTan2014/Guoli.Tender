@@ -26,6 +26,7 @@ namespace Guoli.Tender.Web
                 task.Start();
             };
             task.Start();
+            //EsHelper.SyncFromSqlServer();
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)

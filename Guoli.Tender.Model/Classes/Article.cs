@@ -11,16 +11,12 @@ namespace Guoli.Tender.Model
         [MaxLength(500)]
         public string Title { get; set; }
 
-        [Required]
         public string Summary { get; set; }
 
-        [Required]
         public string Content { get; set; }
 
-        [Required]
         public string ContentWithoutHtml { get; set; }
 
-        [Required]
         public DateTime PubTime { get; set; }
 
         /// <summary>
